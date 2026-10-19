@@ -10,6 +10,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+var ErrNotFound = errors.New("key not found")
+
 func (c *Client) Set(ctx context.Context, key string, value any, ttl time.Duration) error {
 	raw, err := json.Marshal(value)
 	if err != nil {
@@ -21,7 +23,7 @@ func (c *Client) Get(ctx context.Context, key string, dest any) error {
 	raw, err := c.rdb.Get(ctx, key).Bytes()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return fmt.Errorf("cache key not found")
+			return ErrNotFound
 		}
 		return err
 	}
