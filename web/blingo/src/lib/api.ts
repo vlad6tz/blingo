@@ -23,7 +23,9 @@ export async function fetchCiphertext(id: string): Promise<Blob> {
   const res = await fetch(`${API}/download/${id}`, {
     method: "GET",
   });
+  if (res.status === 404)
+    throw new Error(`file has expired or was already consumed`);
   if (!res.ok)
-    throw new Error(`download failed: ${res.status} ${await res.text()}`)
-  return (await res.blob() as Blob)
+    throw new Error(`download failed: ${res.status} ${await res.text()}`);
+  return (await res.blob()) as Blob;
 }
