@@ -13,6 +13,7 @@ import (
 
 func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 	transferId := r.PathValue("id")
+
 	var session Session
 	if err := h.cache.Get(r.Context(), transferId, &session); err != nil {
 		if errors.Is(err, cache.ErrNotFound) {
@@ -22,6 +23,7 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get session data", http.StatusInternalServerError)
 		return
 	}
+
 	file, err := h.storage.GetFile(r.Context(), session.ObjectKey)
 	if err != nil {
 		if storage.IsNotFound(err) {
@@ -34,7 +36,6 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 	defer file.Body.Close()
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", disposition(session.Filename))
 	if file.ContentLength != nil && *file.ContentLength >= 0 {
 		w.Header().Set("Content-Length", strconv.FormatInt(*file.ContentLength, 10))
 	}
@@ -43,6 +44,7 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		log.Printf("streaming error %s: %v", transferId, err)
 		return
 	}
+
 	if err := h.cache.Del(r.Context(), transferId); err != nil {
 		log.Printf("remove session %s : %v", transferId, err)
 	}
