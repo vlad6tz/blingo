@@ -1,9 +1,8 @@
 export interface UploadResponse {
-  filename: string
-  id: string
-  size: number
+  id: string;
 }
-export type ParsedLink = {
-  id: string
-  key: string
+
+export interface ParsedLink {
+  id: string;
+  key: string;
 }
