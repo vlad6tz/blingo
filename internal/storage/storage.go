@@ -2,11 +2,13 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 type Service struct {
@@ -20,11 +22,12 @@ func NewService(cli *s3.Client, bucket string) *Service {
 		bucket: bucket,
 	}
 }
-func (s *Service) StoreFile(ctx context.Context, key string, body io.Reader) error {
+func (s *Service) StoreFile(ctx context.Context, key string, body io.Reader, size int64) error {
 	_, err := s.s3.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(s.bucket),
-		Key:    aws.String(key),
-		Body:   body,
+		Bucket:        aws.String(s.bucket),
+		Key:           aws.String(key),
+		Body:          body,
+		ContentLength: aws.Int64(size),
 	})
 	return err
 }
@@ -48,4 +51,8 @@ func (s *Service) DeleteFile(ctx context.Context, key string) error {
 		return fmt.Errorf("failed to delete object %s:%w", key, err)
 	}
 	return err
+}
+func IsNotFound(err error) bool {
+	var noSuchKey *types.NoSuchKey
+	return errors.As(err, &noSuchKey)
 }
