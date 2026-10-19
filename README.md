@@ -13,10 +13,16 @@ ciphertext.
 Early work in progress. Current pieces:
 
 - Go backend (`cmd`, `internal/...`)
-- `internal/crypt` — encryption helpers
+- `internal/api` — HTTP handlers (upload, download)
+- `internal/crypt` —  package stub, not implemented yet
 - `internal/storage` — S3-compatible (AWS S3 / Cloudflare R2) client
 - `internal/cache` — Redis client and helpers
 
+### Known limitations
+
+- Only file *bytes* are intended to be encrypted client-side. Metadata in the
+  cache,  filename, content type, size, is plaintext on the server.
+- Download links are single-use and expire after 10 minutes.
 ## Stack
 
 - Go
