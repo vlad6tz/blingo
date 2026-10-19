@@ -1,5 +1,5 @@
 export async function generateKey(): Promise<CryptoKey> {
-  return crypto.subtle.generateKey({ name: "AES-GCN", length: 256 }, true, [
+  return crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, [
     "encrypt",
     "decrypt",
   ]);
@@ -15,7 +15,7 @@ export async function importKey(b64: string): Promise<CryptoKey> {
     "raw",
     fromBase64Url(b64),
     { name: "AES-GCM" },
-    true,
+    false,
     ["decrypt"],
   );
 }
@@ -23,7 +23,10 @@ export async function importKey(b64: string): Promise<CryptoKey> {
 function toBase64Url(bytes: Uint8Array): string {
   let s = "";
   for (const b of bytes) s += String.fromCharCode(b);
-  return btoa(s).replaceAll("+", "-").replace("/", "_").replaceAll(/=+$/, "");
+  return btoa(s)
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replace(/=+$/, "");
 }
 
 function fromBase64Url(s: string) {
