@@ -33,3 +33,18 @@ func (c *Client) Get(ctx context.Context, key string, dest any) error {
 func (c *Client) Del(ctx context.Context, key ...string) error {
 	return c.rdb.Del(ctx, key...).Err()
 }
+
+// Mark sets a short-lived sentinel, used to record that a transfer has been
+// served without deleting its session outright.
+func (c *Client) Mark(ctx context.Context, key string, ttl time.Duration) error {
+	return c.rdb.Set(ctx, key, "1", ttl).Err()
+}
+
+// Marked reports whether a sentinel set by Mark is still present.
+func (c *Client) Marked(ctx context.Context, key string) (bool, error) {
+	n, err := c.rdb.Exists(ctx, key).Result()
+	if err != nil {
+		return false, err
+	}
+	return n > 0, nil
+}
