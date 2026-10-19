@@ -39,3 +39,13 @@ func (s *Service) GetFile(ctx context.Context, key string) (*s3.GetObjectOutput,
 	}
 	return obj, nil
 }
+func (s *Service) DeleteFile(ctx context.Context, key string) error {
+	_, err := s.s3.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete object %s:%w", key, err)
+	}
+	return err
+}
