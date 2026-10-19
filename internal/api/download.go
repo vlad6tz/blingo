@@ -24,6 +24,13 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	markKey := "downloaded:" + transferId
+	marked, err := h.cache.Marked(r.Context(), markKey)
+	if err != nil {
+		http.Error(w, "failed to get transfer state", http.StatusInternalServerError)
+		return
+	}
+
 	file, err := h.storage.GetFile(r.Context(), session.ObjectKey)
 	if err != nil {
 		if storage.IsNotFound(err) {
@@ -45,7 +52,15 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.cache.Del(r.Context(), transferId); err != nil {
-		log.Printf("remove session %s : %v", transferId, err)
+	if marked {
+		// Already inside the retry window; leaving the TTLs alone keeps a
+		// repeated fetch from pushing the window back.
+		return
+	}
+	if err := h.cache.Set(r.Context(), transferId, session, downloadTTL); err != nil {
+		log.Printf("shorten session %s: %v", transferId, err)
+	}
+	if err := h.cache.Mark(r.Context(), markKey, downloadTTL); err != nil {
+		log.Printf("mark downloaded %s: %v", transferId, err)
 	}
 }
