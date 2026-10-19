@@ -15,7 +15,12 @@ func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to upload file", http.StatusInternalServerError)
 		return
 	}
-	err := h.cache.Set(r.Context(), transferId, "active", 10*time.Minute)
+	session := Session{
+		ObjectKey: transferId,
+		Status:    "active",
+		CreatedAt: time.Now(),
+	}
+	err := h.cache.Set(r.Context(), transferId, session, 10*time.Minute)
 	if err != nil {
 		h.storage.DeleteFile(r.Context(), transferId)
 		http.Error(w, "failed to save session", http.StatusInternalServerError)
