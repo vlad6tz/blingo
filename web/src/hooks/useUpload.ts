@@ -1,13 +1,15 @@
 import { useCallback, useState } from "react";
-import { MAX_UPLOAD_BYTES, describeError, uploadFile } from "@/lib/api";
+import { MAX_UPLOAD_BYTES, ApiError, describeError, registerCodeLink, uploadFile } from "@/lib/api";
 import { encryptFile } from "@/crypto/encrypt";
-import { exportKey, generateKey } from "@/crypto/key";
+import { exportKey, fromBase64Url, generateKey } from "@/crypto/key";
+import { formatCode, generateCode, wrapRawKey } from "@/crypto/code";
 import { buildShareLink } from "@/lib/link";
 
 export type UploadPhase = "idle" | "encrypting" | "uploading" | "done";
 
 export interface UploadResult {
   link: string;
+  code?: string;
   name: string;
   size: number;
 }
@@ -37,7 +39,27 @@ export function useUpload() {
       setPhase("uploading");
       const { id } = await uploadFile(ciphertext, setProgress);
 
-      setResult({ link: buildShareLink(id, keyB64), name: file.name, size: file.size });
+      // A share code wraps the raw key with PBKDF2(digits); when the code
+      // registration fails, the transfer still works as a plain link.
+      let code: string | undefined;
+      try {
+        for (let attempt = 0; !code; attempt++) {
+          const digits = generateCode();
+          const blob = await wrapRawKey(fromBase64Url(keyB64), digits);
+          try {
+            await registerCodeLink(id, digits, blob);
+            code = formatCode(digits);
+          } catch (err) {
+            if (!(err instanceof ApiError) || err.status !== 409 || attempt >= 4) {
+              throw err;
+            }
+          }
+        }
+      } catch {
+        code = undefined;
+      }
+
+      setResult({ link: buildShareLink(id, keyB64), code, name: file.name, size: file.size });
       setPhase("done");
     } catch (err) {
       setError(describeError(err));

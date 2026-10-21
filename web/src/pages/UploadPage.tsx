@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { DragEvent } from "react";
+import { Link } from "react-router-dom";
 import {
   Check,
   Copy,
@@ -101,6 +102,16 @@ export function UploadPage() {
                     about 10 minutes from now, or shortly after the first
                     download.
                   </p>
+                  {result.code && (
+                    <div className="space-y-1 border-t pt-4">
+                      <p className="text-sm text-muted-foreground">
+                        or share with a code instead:
+                      </p>
+                      <p className="text-center font-mono text-2xl font-medium tracking-[0.3em]">
+                        {result.code}
+                      </p>
+                    </div>
+                  )}
                   <Button variant="outline" className="h-11 w-full" onClick={restart}>
                     Send another file
                   </Button>
@@ -187,6 +198,13 @@ export function UploadPage() {
           )}
         </CardContent>
       </Card>
+
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        Received something?{" "}
+        <Link to="/d" className="underline underline-offset-2">
+          Open it from the receive page
+        </Link>
+      </p>
     </div>
   );
 }

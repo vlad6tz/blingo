@@ -11,6 +11,10 @@ const router = createBrowserRouter([
     element: <UploadPage/>
   },
   {
+    path: '/d',
+    element: <DownloadPage/>
+  },
+  {
     path: '/d/:id',
     element: <DownloadPage/>
   }
