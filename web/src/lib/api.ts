@@ -24,6 +24,8 @@ export function describeError(err: unknown): string {
         return "This link has expired or its file was already received. Ask for a new one.";
       case 413:
         return "The file is too large (max 100 MB).";
+      case 429:
+        return "Too many attempts, wait a couple of minutes and try again.";
       default:
         return "Something went wrong. Please try again.";
     }
@@ -68,4 +70,32 @@ export async function fetchCiphertext(id: string): Promise<ArrayBuffer> {
   const res = await fetch(`${API}/download/${encodeURIComponent(id)}`);
   if (!res.ok) throw new ApiError(res.status, `Download failed (${res.status}).`);
   return res.arrayBuffer();
+}
+
+export async function registerCodeLink(
+  id: string,
+  code: string,
+  blob: Uint8Array,
+): Promise<void> {
+  let b64 = "";
+  for (const b of blob) b64 += String.fromCharCode(b);
+  const res = await fetch(`${API}/link`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, code, blob: btoa(b64) }),
+  });
+  if (!res.ok) throw new ApiError(res.status, `Code link failed (${res.status}).`);
+}
+
+export async function fetchCodeLink(id: string): Promise<ArrayBuffer> {
+  const res = await fetch(`${API}/link/${encodeURIComponent(id)}`);
+  if (!res.ok) throw new ApiError(res.status, `Code link failed (${res.status}).`);
+  return res.arrayBuffer();
+}
+
+export async function resolveCode(code: string): Promise<string> {
+  const res = await fetch(`${API}/code/${code}`);
+  if (!res.ok) throw new ApiError(res.status, `Code lookup failed (${res.status}).`);
+  const { id } = (await res.json()) as { id: string };
+  return id;
 }

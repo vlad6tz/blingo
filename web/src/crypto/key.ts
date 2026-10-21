@@ -29,7 +29,7 @@ function toBase64Url(bytes: Uint8Array): string {
     .replace(/=+$/, "");
 }
 
-function fromBase64Url(s: string) {
+export function fromBase64Url(s: string) {
   const b64 = s.replaceAll("-", "+").replaceAll("_", "/");
   const pad = b64.length % 4 ? "=".repeat(4 - (b64.length % 4)) : "";
   const bin = atob(b64 + pad);
