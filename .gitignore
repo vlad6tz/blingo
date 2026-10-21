@@ -28,6 +28,9 @@ go.work.sum
 # env file
 .env
 
+# local compose override (publishes 127.0.0.1:8080 for the vite dev proxy)
+docker-compose.override.yaml
+
 # Editor/IDE
 # .idea/
 # .vscode/

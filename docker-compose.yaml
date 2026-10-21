@@ -1,0 +1,58 @@
+# Coolify notes:
+# - Only `web` is exposed. Set the FQDN on the web service in the Coolify
+#   UI; its proxy routes there and nginx reaches the app internally.
+# - The env vars (${AccountID} and friends) come from the env section of the
+#   Coolify service, not from a .env file in the repo.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      RedisUrl: redis://dragonfly:6379/0
+      AccountID: ${AccountID:-}
+      AccessKeyID: ${AccessKeyID:-}
+      AccessKeySecret: ${AccessKeySecret:-}
+      BucketName: ${BucketName:-}
+    depends_on:
+      dragonfly:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8080"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  web:
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.40.1
+    restart: unless-stopped
+    volumes:
+      - dragonfly-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  dragonfly-data:

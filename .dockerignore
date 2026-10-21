@@ -3,7 +3,14 @@
 .env
 .env.example
 Dockerfile
+web.Dockerfile
+nginx.conf
 .dockerignore
 docker-compose.yml
+docker-compose.yaml
+docker-compose.override.yaml
 README.md
 LICENSE
+
+web/node_modules
+web/dist
