@@ -48,3 +48,29 @@ func (c *Client) Marked(ctx context.Context, key string) (bool, error) {
 	}
 	return n > 0, nil
 }
+
+// SetNX stores the value only when the key is absent, reporting whether it
+// took effect; used to claim first ownership of short-lived code links.
+func (c *Client) SetNX(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
+	raw, err := json.Marshal(value)
+	if err != nil {
+		return false, fmt.Errorf("marshal %q: %w", key, err)
+	}
+	stored, err := c.rdb.SetNX(ctx, key, raw, ttl).Result()
+	if err != nil {
+		return false, err
+	}
+	return stored, nil
+}
+
+// Bump increments a counter that expires when first created, and reports its
+// new value; used to keep rate limits together.
+func (c *Client) Bump(ctx context.Context, key string, ttl time.Duration) (int64, error) {
+	pipe := c.rdb.TxPipeline()
+	incr := pipe.Incr(ctx, key)
+	pipe.ExpireNX(ctx, key, ttl)
+	if _, err := pipe.Exec(ctx); err != nil {
+		return 0, err
+	}
+	return incr.Val(), nil
+}

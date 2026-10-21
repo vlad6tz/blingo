@@ -22,4 +22,7 @@ func NewHandler(s *storage.Service, r *cache.Client) *Handler {
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/upload", h.HandleUpload)
 	mux.HandleFunc("GET /api/download/{id}", h.HandleDownload)
+	mux.HandleFunc("POST /api/link", h.HandleLink)
+	mux.HandleFunc("GET /api/link/{id}", h.HandleLinkGet)
+	mux.HandleFunc("GET /api/code/{digits}", h.HandleCode)
 }
