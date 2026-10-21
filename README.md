@@ -27,6 +27,11 @@ Links expire 10 minutes after upload. After the first successful download a
 link stops working, except for a one-minute grace window so a client that
 failed to decrypt can retry.
 
+Codes: uploads can also produce `123-456`-style six-digit share codes. The
+digits wrap (encrypt) the file's key with a PBKDF2-derived key, so a recipient
+simply types the code on the site instead of opening a link, and the server
+still never sees any key material.
+
 ## Current state
 
 Working end to end locally: upload, link sharing, download, expiry. Pieces:
@@ -95,7 +100,7 @@ that received the bytes but failed to decrypt can retry; after that, the
 session is closed and the object is deleted.
 
 **What happens if nobody opens the link?**
-It disappears 10 minutes after upload.
+It disappears 10 minutes after upload. The same applies to codes.
 
 **Does the server learn anything at all?**
 Yes. It sees the ciphertext size (file size plus a small envelope header, IV,
@@ -111,6 +116,15 @@ Not yet. One link, one file.
 
 **Who can read an unopened link?**
 Anyone who has the full link. Treat it like a secret; it's a bearer token.
+
+**How safe is a code compared to a link?**
+The digits are the secret in that mode, and six digits are around 20 bits,
+far weaker than the link's 256-bit key. Online guessing is held back by rate
+limits (10 lookups per minute per address, plus a capped global rate), but a
+ciphertext attacker with bucket access could brute-force the digits offline.
+Rate limits key on `X-Forwarded-For` behind the proxy, which is best-effort
+identity information. Use a code for convenience, use the link when it needs
+to be tight.
 
 **Is the crypto audited?**
 No. It's AES-256-GCM via the browser's WebCrypto API, but the
