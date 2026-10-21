@@ -78,7 +78,7 @@ export function UploadPage() {
               {phase === "done" && result ? (
                 <div className="space-y-4">
                   <p className="text-sm font-medium">
-                    Here's your one-time link — send it:
+                    Here's your one-time link, send it:
                   </p>
                   <div className="flex items-center gap-2">
                     <Input
@@ -97,7 +97,7 @@ export function UploadPage() {
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    The link only works for one person and expires on its own —
+                    The link only works for one person and expires on its own
                     about 10 minutes from now, or shortly after the first
                     download.
                   </p>

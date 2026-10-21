@@ -35,7 +35,7 @@ export function useDownload(id: string | undefined) {
       if (!cryptoAvailable()) {
         setPhase("error");
         setError(
-          "Open this link over https (or on localhost) — the browser blocks secure pages otherwise.",
+          "Open this link over https (or on localhost); the browser blocks secure pages otherwise.",
         );
         return;
       }

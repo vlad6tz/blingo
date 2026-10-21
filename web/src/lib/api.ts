@@ -19,7 +19,7 @@ export function describeError(err: unknown): string {
   if (err instanceof ApiError) {
     switch (err.status) {
       case 0:
-        return "Couldn't connect — check your internet and try again.";
+        return "Couldn't connect, check your internet and try again.";
       case 404:
         return "This link has expired or its file was already received. Ask for a new one.";
       case 413:
@@ -29,7 +29,7 @@ export function describeError(err: unknown): string {
     }
   }
   if (err instanceof DOMException && err.name === "OperationError") {
-    return "The file couldn't be opened — the link may be broken. Ask for a fresh one.";
+    return "The file couldn't be opened; the link may be broken. Ask for a fresh one.";
   }
   return err instanceof Error ? err.message : "Something went wrong.";
 }
@@ -53,7 +53,7 @@ export function uploadFile(
         try {
           resolve(JSON.parse(xhr.responseText) as UploadResponse);
         } catch {
-          reject(new ApiError(xhr.status, "Got an unexpected response — please try again."));
+          reject(new ApiError(xhr.status, "Got an unexpected response, please try again."));
         }
       } else {
         reject(new ApiError(xhr.status, `Upload failed (${xhr.status}).`));
