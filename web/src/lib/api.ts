@@ -4,7 +4,7 @@ const API = import.meta.env.VITE_API_URL ?? "/api";
 
 // Mirrors maxUploadBytes on the server, so oversized files are rejected
 // before any bytes leave the browser.
-export const MAX_UPLOAD_BYTES = 10 << 20;
+export const MAX_UPLOAD_BYTES = 100 << 20;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -23,7 +23,7 @@ export function describeError(err: unknown): string {
       case 404:
         return "This link has expired or its file was already received. Ask for a new one.";
       case 413:
-        return "The file is too large (max 10 MB).";
+        return "The file is too large (max 100 MB).";
       default:
         return "Something went wrong. Please try again.";
     }

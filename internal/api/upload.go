@@ -8,7 +8,7 @@ import (
 	"uuid"
 )
 
-const maxUploadBytes = 10 << 20
+const maxUploadBytes = 100 << 20
 
 func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength < 0 {

@@ -24,7 +24,7 @@ export function useUpload() {
     setProgress(0);
 
     if (file.size > MAX_UPLOAD_BYTES) {
-      setError("The file is too large (max 10 MB).");
+      setError("The file is too large (max 100 MB).");
       return;
     }
 
