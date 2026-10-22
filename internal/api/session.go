@@ -15,7 +15,6 @@ const (
 // derived from six digits, so the code alone is what recipients type; the
 // digits resolve to the transfer id through a short-lived reverse key.
 const (
-	codeLength       = 6
 	maxCodeLinkBytes = 1 << 12
 
 	codeRateIP     = 10  // code lookups per ip, per window
