@@ -1,11 +1,13 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/vlad6tz/blingo.git/internal/cache"
 	"github.com/vlad6tz/blingo.git/internal/storage"
@@ -57,15 +59,18 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		// repeated fetch from pushing the window back.
 		return
 	}
+	// worker uses the req context to delete the file after a delay, so we don't want to cancel it when the request ends.
+	bookkeepingCtx, cancel := context.WithTimeout(context.WithoutCancel(r.Context()), 5*time.Second)
+	defer cancel()
 	select {
 	case h.deleteQueue <- session.ObjectKey:
 	default:
 		log.Printf("delete queue full for transfer: %s", transferId)
 	}
-	if err := h.cache.Set(r.Context(), transferId, session, downloadTTL); err != nil {
+	if err := h.cache.Set(bookkeepingCtx, transferId, session, downloadTTL); err != nil {
 		log.Printf("shorten session %s: %v", transferId, err)
 	}
-	if err := h.cache.Mark(r.Context(), markKey, downloadTTL); err != nil {
+	if err := h.cache.Mark(bookkeepingCtx, markKey, downloadTTL); err != nil {
 		log.Printf("mark downloaded %s: %v", transferId, err)
 	}
 }
