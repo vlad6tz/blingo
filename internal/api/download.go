@@ -57,6 +57,11 @@ func (h *Handler) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		// repeated fetch from pushing the window back.
 		return
 	}
+	select {
+	case h.deleteQueue <- session.ObjectKey:
+	default:
+		log.Printf("delete queue full for transfer: %s", transferId)
+	}
 	if err := h.cache.Set(r.Context(), transferId, session, downloadTTL); err != nil {
 		log.Printf("shorten session %s: %v", transferId, err)
 	}
