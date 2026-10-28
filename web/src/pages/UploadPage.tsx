@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { cryptoAvailable, copyToClipboard, formatBytes } from "@/lib/browser";
 
 export function UploadPage() {
@@ -52,10 +53,21 @@ export function UploadPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pt-6 pb-16">
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pt-6 pb-16 md:max-w-3xl md:px-8">
       <SiteHeader />
 
-      <Card className="my-auto mt-6">
+      <div className="mt-12">
+        <div className="mb-5 space-y-1 text-center">
+          <h1 className="text-lg font-medium tracking-tight">
+            Send a file, keep it private
+          </h1>
+          <p className="text-sm text-balance text-muted-foreground">
+            Your file is locked in your browser and shared as a one-time link
+            or a six-digit code. The server never sees what's inside.
+          </p>
+        </div>
+
+      <Card className="md:mx-auto md:w-full md:max-w-md">
         <CardContent className="space-y-4">
           {!cryptoAvailable() ? (
             <Alert variant="destructive">
@@ -198,6 +210,7 @@ export function UploadPage() {
           )}
         </CardContent>
       </Card>
+      </div>
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
         Received something?{" "}
@@ -205,6 +218,8 @@ export function UploadPage() {
           Open it from the receive page
         </Link>
       </p>
+
+      <SiteFooter />
     </div>
   );
 }
