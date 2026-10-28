@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { formatBytes, saveBlob } from "@/lib/browser";
 
 function Problem({
@@ -75,10 +76,10 @@ export function DownloadPage() {
   const { mode, phase, file, error, submitCode } = useDownload(id);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pt-6 pb-16">
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pt-6 pb-16 md:max-w-3xl md:px-8">
       <SiteHeader />
 
-      <div className="my-auto mt-6 space-y-4">
+      <div className="mt-12 space-y-4 md:mx-auto md:w-full md:max-w-md">
         {mode === "code" ? (
           <>
             {phase === "code" && <CodeForm onEnter={submitCode} />}
@@ -181,6 +182,8 @@ export function DownloadPage() {
           </Card>
         )}
       </div>
+
+      <SiteFooter />
     </div>
   );
 }
