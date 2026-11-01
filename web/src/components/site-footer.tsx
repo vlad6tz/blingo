@@ -52,6 +52,19 @@ export function SiteFooter() {
               vlad@vladutz.dev
             </a>
           </div>
+          <p>
+            If you find blingo useful, consider buying me a{" "}
+            <a
+              href="https://ko-fi.com/vlad6tz"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-foreground"
+            >
+              coffee
+            </a>{" "}
+            to support the project. Everything here disappears — your
+            appreciation doesn't have to.
+          </p>
         </div>
 
         <div className="mt-6 md:mt-0">
