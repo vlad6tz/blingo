@@ -26,24 +26,26 @@ export function SiteHeader() {
         <img src="/favicon.svg" alt="" className="size-5" aria-hidden />
         blingo
       </Link>
-      <a
-        href="https://github.com/vlad6tz/blingo"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="blingo on GitHub"
-        className="text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <GitHubMark className="size-4.5" />
-      </a>
-      <a
-        href="https://ko-fi.com/vlad6tz"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Support blingo on Ko-fi"
-        className="text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <KoFiMark className="size-4.5" />
-      </a>
+      <div className="flex items-center gap-3.5">
+        <a
+          href="https://github.com/vlad6tz/blingo"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="blingo on GitHub"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <GitHubMark className="size-4.5" />
+        </a>
+        <a
+          href="https://ko-fi.com/vlad6tz"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Support blingo on Ko-fi"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <KoFiMark className="size-4.5" />
+        </a>
+      </div>
     </header>
   );
 }
