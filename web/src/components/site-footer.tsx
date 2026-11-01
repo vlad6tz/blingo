@@ -62,7 +62,7 @@ export function SiteFooter() {
             >
               coffee
             </a>{" "}
-            to support the project. Everything here disappears — your
+            to support the project. Everything here disappears, your
             appreciation doesn't have to.
           </p>
         </div>
